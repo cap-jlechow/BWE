@@ -1,0 +1,25 @@
+@page "/filedownload"
+@inject IJSRuntime JSRuntime
+
+<h1>File Download</h1>
+<p>Enter some text below to save as a file.</p>
+
+<textarea @bind="content" />
+<br/>
+<button class="btn btn-primary" @onclick="DownloadFile" value="Download Text">
+    Download
+</button>
+
+@code {
+    string content;
+    readonly string fileName = $"MyText_{DateTime.Now.Ticks}.txt";
+
+    public async void DownloadFile()
+    {
+        await JSRuntime.InvokeAsync<object>(
+            "FileSaveAs",
+            fileName,
+            content
+        );
+    }
+}
