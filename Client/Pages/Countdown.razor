@@ -1,0 +1,32 @@
+@page "/countdown"
+@using System.Threading;
+
+<h1>Countdown to the National Election</h1>
+
+<p><em>@formattedRemainingTime</em> until Election Day!</p>
+
+<small>
+    @timezoneStatus
+</small>
+
+@code {
+    private static readonly DateTime ELECTION_DAY = new DateTime(2020, 11, 3);
+    private string formattedRemainingTime = FormattedDateUntil();
+    private string timezoneStatus = $"You are in the {@TimeZoneInfo.Local.DisplayName} timezone. ({@TimeZoneInfo.Local.StandardName})";
+    private static string FormattedDateUntil() {
+        var currentDate = DateTime.Now;
+        var diff = ELECTION_DAY.Subtract(currentDate);
+        return $"{Math.Truncate(diff.TotalDays)} day(s), {Math.Truncate(diff.TotalHours % 24)} hour(s), {Math.Truncate(diff.TotalMinutes % 60)} minute(s), and {Math.Truncate(diff.TotalSeconds % 60)} second(s)";
+    }
+
+    private async Task UpdateAsync() {
+        formattedRemainingTime = FormattedDateUntil();
+        await InvokeAsync(() => this.StateHasChanged());
+    }
+
+    protected override void OnInitialized()
+    {
+        new Timer(new TimerCallback(async _ => await this.UpdateAsync()), null, 1000, 1000);
+        base.OnInitialized();
+    }
+}
