@@ -1,5 +1,7 @@
 @page "/countdown"
 @using System.Threading;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<Countdown> logger;
 
 <h1>Countdown to the National Election</h1>
 
@@ -20,6 +22,7 @@
     }
 
     private async Task UpdateAsync() {
+        logger.LogDebug("Update called.");
         formattedRemainingTime = FormattedDateUntil();
         await InvokeAsync(() => this.StateHasChanged());
     }
