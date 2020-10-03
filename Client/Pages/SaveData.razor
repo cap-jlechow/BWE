@@ -1,0 +1,102 @@
+@page "/savedata"
+@using BlazorWasmElectron.Shared
+@using System
+@using System.Collections.ObjectModel
+@inject PeopleService _peopleService
+
+<h1>Save Dummy Data</h1>
+
+<p>This component demostrates the ability to save data to the application using an embedded database.</p>
+
+<form>
+    <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" class="form-control" id="firstName" placeholder="First Name" @bind-value="_editedPerson.FirstName">
+    </div>
+    <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" class="form-control" id="lastName" placeholder="Last Name" @bind-value="_editedPerson.LastName">
+    </div>
+    <div class="form-group">
+        <label for="city">City</label>
+        <input type="text" class="form-control" id="city" placeholder="City" @bind-value="_editedPerson.City">
+    </div>
+    <button type="button" class="btn btn-primary" @onclick="SavePersonAsync">Add</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>City</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(!_people.Any()) {
+            <tr>
+                <td colspan="5">
+                    <div class="alert alert-info" role="alert">No records found.</div>
+                </td>
+            </tr>
+        }
+        @foreach(var person in _people) 
+        {
+            <tr>
+                <td>@person.Id</td>
+                <td>@person.FirstName</td>
+                <td>@person.LastName</td>
+                <td>@person.City</td>
+                <td>
+                    <button type="button" class="btn btn-link" @onclick="async _ => await DeletePersonAsync(person.Id)">
+                        <span class="oi oi-trash"/>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private ObservableCollection<Person> _people = new ObservableCollection<Person>();
+    private Person _editedPerson = new Person();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _people.CollectionChanged += async (e, args) => {
+            await InvokeAsync(this.StateHasChanged);
+        };;
+        await GetPeopleAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task GetPeopleAsync() {
+        var people = await _peopleService.GetPeopleAsync();
+        SafeClear();
+        foreach(var person in people) {
+            _people.Add(person);
+        }
+    }
+
+    private async Task DeletePersonAsync(int id) {
+       var personToRemove = _people.SingleOrDefault(p => p.Id == id);
+       if(personToRemove != null) {
+           await _peopleService.DeletePersonAsync(personToRemove);
+           await GetPeopleAsync();
+       }
+    }
+
+    private async Task SavePersonAsync() {
+        await _peopleService.SavePersonAsync(_editedPerson);
+        _editedPerson = new Person();
+        await GetPeopleAsync();
+    }
+
+    private void SafeClear() {
+        while(_people.Any()) {
+            _people.RemoveAt(0);
+        }
+    }
+}
