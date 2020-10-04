@@ -1,6 +1,5 @@
 @page "/savedata"
 @using BlazorWasmElectron.Shared
-@using System
 @using System.Collections.ObjectModel
 @inject PeopleService _peopleService
 
@@ -8,21 +7,9 @@
 
 <p>This component demostrates the ability to save data to the application using an embedded database.</p>
 
-<form>
-    <div class="form-group">
-        <label for="firstName">First Name</label>
-        <input type="text" class="form-control" id="firstName" placeholder="First Name" @bind-value="_editedPerson.FirstName">
-    </div>
-    <div class="form-group">
-        <label for="lastName">Last Name</label>
-        <input type="text" class="form-control" id="lastName" placeholder="Last Name" @bind-value="_editedPerson.LastName">
-    </div>
-    <div class="form-group">
-        <label for="city">City</label>
-        <input type="text" class="form-control" id="city" placeholder="City" @bind-value="_editedPerson.City">
-    </div>
-    <button type="button" class="btn btn-primary" @onclick="SavePersonAsync">Add</button>
-</form>
+<PersonForm Model="_editedPerson" OnSubmit="SavePersonAsync" />
+
+<br/>
 
 <table class="table">
     <thead>

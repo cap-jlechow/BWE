@@ -1,0 +1,25 @@
+@using BlazorWasmElectron.Shared
+
+<form>
+    <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" class="form-control" id="firstName" placeholder="First Name" @bind-value="Model.FirstName">
+    </div>
+    <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" class="form-control" id="lastName" placeholder="Last Name" @bind-value="Model.LastName">
+    </div>
+    <div class="form-group">
+        <label for="city">City</label>
+        <input type="text" class="form-control" id="city" placeholder="City" @bind-value="Model.City">
+    </div>
+    <button type="button" class="btn btn-primary" @onclick="OnSubmit">Add</button>
+</form>
+
+@code {
+    [Parameter]
+    public Person Model { get; set;}
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnSubmit {get;set;}
+}
